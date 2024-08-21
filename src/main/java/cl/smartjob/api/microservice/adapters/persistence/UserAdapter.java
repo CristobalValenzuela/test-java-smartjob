@@ -7,7 +7,6 @@ import cl.smartjob.api.microservice.application.ports.out.GetUserPort;
 import cl.smartjob.api.microservice.application.ports.out.ListUsersPort;
 import cl.smartjob.api.microservice.application.ports.out.SaveUserPort;
 import cl.smartjob.api.microservice.application.ports.out.UpdateUserPort;
-import cl.smartjob.api.microservice.application.services.JwtTokenService;
 import cl.smartjob.api.microservice.domain.exception.NotDataFoundException;
 import cl.smartjob.api.microservice.domain.model.UserRespondeDTO;
 import java.time.LocalDateTime;
@@ -23,16 +22,15 @@ public class UserAdapter implements SaveUserPort, ListUsersPort, GetUserPort, Up
 
   private final UserRepository userRepository;
   private final UserMapper userMapper;
-  private final JwtTokenService jwtTokenService;
 
   private static final String USER_NOT_FOUND = "Usuario no encontrado";
 
   @Override
-  public UserRespondeDTO createUser(UserDTO userDTO) {
+  public UserRespondeDTO createUser(UserDTO userDTO, String token) {
     UserEntity userEntity = userMapper.toEntity(userDTO);
     userEntity.setIsActive(true);
     userEntity.setLastLogin(LocalDateTime.now());
-    userEntity.setToken(jwtTokenService.generateToken(userDTO.getName()));
+    userEntity.setToken(token);
     userEntity.getPhones().forEach(
         phoneEntity -> phoneEntity.setUser(userEntity)
     );

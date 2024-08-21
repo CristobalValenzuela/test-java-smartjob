@@ -17,6 +17,7 @@ import cl.smartjob.api.microservice.domain.model.UserRespondeDTO;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,14 +32,15 @@ public class UserService implements CreateUserUseCase, ListUsersUseCase, GetUser
   private final UpdateUserPort updateUserPort;
   private final DeleteUserPort deleteUserPort;
   private final ValidationRegExp validationRegExp;
+  private final JwtTokenService jwtTokenService;
 
   @Override
   public UserRespondeDTO createUser(UserDTO userDTO) {
     Map<String,String> errors = new HashMap<>();
-    if(!userDTO.getEmail().matches(validationRegExp.getEmailRegexValue())){
+    if(!userDTO.getEmail().matches(Optional.ofNullable(validationRegExp.getEmailRegexValue()).orElse(".*"))){
       errors.put("email", "Email no valido");
     }
-    if(!userDTO.getPassword().matches(validationRegExp.getPasswordRegexValue())){
+    if(!userDTO.getPassword().matches(Optional.ofNullable(validationRegExp.getPasswordRegexValue()).orElse(".*"))){
       errors.put("password", "Password no valido");
     }
 
@@ -46,7 +48,8 @@ public class UserService implements CreateUserUseCase, ListUsersUseCase, GetUser
       throw new ValidationException(errors);
     }
 
-    return saveUserPort.createUser(userDTO);
+    String token = jwtTokenService.generateToken(userDTO.getName());
+    return saveUserPort.createUser(userDTO, token);
   }
 
   @Override

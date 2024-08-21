@@ -5,5 +5,5 @@ import cl.smartjob.api.microservice.domain.model.UserRespondeDTO;
 
 public interface SaveUserPort {
 
-  UserRespondeDTO createUser(UserDTO userDTO);
+  UserRespondeDTO createUser(UserDTO userDTO, String token);
 }

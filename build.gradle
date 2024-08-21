@@ -2,11 +2,23 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.0.5'
     id 'io.spring.dependency-management' version '1.1.0'
+    id 'jacoco'
 }
 
 group = 'cl.smartjob'
 version = '1.0.0'
-sourceCompatibility = '17'
+
+apply from: 'gradle/jacoco.gradle'
+
+compileJava {
+    sourceCompatibility = 17
+    targetCompatibility = 17
+    options.encoding = 'UTF-8'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
 
 repositories {
     mavenCentral()
