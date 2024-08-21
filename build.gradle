@@ -61,6 +61,12 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+/*
+testAll {
+    compileTestJava
+    processTestResources
+    testClasses
+}*/
 
 jar {
     enabled = false

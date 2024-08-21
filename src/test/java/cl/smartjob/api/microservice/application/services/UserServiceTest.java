@@ -1,14 +1,11 @@
 package cl.smartjob.api.microservice.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-import cl.smartjob.api.microservice.adapters.http.dto.PhoneDTO;
-import cl.smartjob.api.microservice.adapters.http.dto.UserDTO;
-import cl.smartjob.api.microservice.adapters.persistence.UserMapper;
-import cl.smartjob.api.microservice.adapters.persistence.UserMapperImpl;
-import cl.smartjob.api.microservice.adapters.persistence.entities.UserEntity;
+import cl.smartjob.api.microservice.BaseTest;
 import cl.smartjob.api.microservice.application.conf.ValidationRegExp;
 import cl.smartjob.api.microservice.application.ports.out.DeleteUserPort;
 import cl.smartjob.api.microservice.application.ports.out.GetUserPort;
@@ -19,8 +16,6 @@ import cl.smartjob.api.microservice.domain.exception.ValidationException;
 import cl.smartjob.api.microservice.domain.model.UserRespondeDTO;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,7 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class UserServiceTest extends BaseTest {
 
   @Mock
   SaveUserPort saveUserPort;
@@ -48,31 +43,24 @@ class UserServiceTest {
   @InjectMocks
   UserService userService;
 
-  UserMapper userMapper;
-
-  @BeforeEach
-  void setUp() {
-    userMapper = new UserMapperImpl();
-  }
-
   @Test
   void createUser() {
-    UserRespondeDTO userRespondeDTO = getUserRespondeDTO();
+    UserRespondeDTO expected = getUserRespondeDTO();
     given(saveUserPort.createUser(any(), any()))
-        .willReturn(userRespondeDTO);
-    UserRespondeDTO userRespondeDTO2 = userService.createUser(getUserDTO());
+        .willReturn(expected);
+    UserRespondeDTO result = userService.createUser(getUserDTO());
 
-    assertThat(userRespondeDTO2.getName()).isEqualTo(userRespondeDTO.getName());
-    assertThat(userRespondeDTO2.getEmail()).isEqualTo(userRespondeDTO.getEmail());
-    assertThat(userRespondeDTO2.getPassword()).isEqualTo(userRespondeDTO.getPassword());
-    assertThat(userRespondeDTO2.getPhones()).isNotEmpty();
+    assertThat(result.getName()).isEqualTo(expected.getName());
+    assertThat(result.getEmail()).isEqualTo(expected.getEmail());
+    assertThat(result.getPassword()).isEqualTo(expected.getPassword());
+    assertThat(result.getPhones()).isNotEmpty();
   }
 
   @Test
   void createUserEmailNoValid() {
     given(validationRegExp.getEmailRegexValue())
         .willReturn("valid@email.cl");
-    ValidationException exception = Assertions.assertThrows(
+    ValidationException exception = assertThrows(
         ValidationException.class,
         () -> userService.createUser(getUserDTO())
     );
@@ -83,7 +71,7 @@ class UserServiceTest {
   void createUserPasswordNoValid() {
     given(validationRegExp.getPasswordRegexValue())
         .willReturn("vvalidPassword");
-    ValidationException exception = Assertions.assertThrows(
+    ValidationException exception = assertThrows(
         ValidationException.class,
         () -> userService.createUser(getUserDTO())
     );
@@ -133,25 +121,5 @@ class UserServiceTest {
     assertThat(userRespondeDTO2.getEmail()).isEqualTo(userRespondeDTO.getEmail());
     assertThat(userRespondeDTO2.getPassword()).isEqualTo(userRespondeDTO.getPassword());
     assertThat(userRespondeDTO2.getPhones()).isNotEmpty();
-  }
-
-  private UserDTO getUserDTO(){
-    PhoneDTO phoneDTO = PhoneDTO.builder()
-        .cityCode(2)
-        .countryCode(56)
-        .number(987654231)
-        .build();
-    return UserDTO.builder()
-        .email("prueba@pl.cl")
-        .name("Prueba")
-        .phones(List.of(phoneDTO))
-        .password("password")
-        .build();
-  }
-
-  private UserRespondeDTO getUserRespondeDTO(){
-    UserEntity userEntity = userMapper.toEntity(getUserDTO());
-    userEntity.setId(UUID.randomUUID());
-    return userMapper.toResponseDTO(userEntity);
   }
 }

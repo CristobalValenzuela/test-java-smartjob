@@ -64,3 +64,18 @@ Yo can modify in application.yml, the default value or set in a container over K
 ## Postman Collection
 
 [Api User.postman_collection.json](https://raw.githubusercontent.com/CristobalValenzuela/test-java-smartjob/master/Api%20User.postman_collection.json)
+
+## Running Tests
+
+To run tests, run the following command
+
+```bash
+  ./gradlew test
+```
+
+```bash
+  cd build/reports/jacoco/test/html
+  #open index.html in browser
+```
+
+![img](https://raw.githubusercontent.com/CristobalValenzuela/test-java-smartjob/master/img/test-result.png)

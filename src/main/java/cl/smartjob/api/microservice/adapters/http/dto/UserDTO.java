@@ -1,9 +1,6 @@
 package cl.smartjob.api.microservice.adapters.http.dto;
 
-import cl.smartjob.api.microservice.application.conf.ValidationRegExp;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;

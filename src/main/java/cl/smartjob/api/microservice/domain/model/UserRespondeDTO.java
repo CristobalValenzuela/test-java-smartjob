@@ -1,6 +1,5 @@
 package cl.smartjob.api.microservice.domain.model;
 
-import cl.smartjob.api.microservice.adapters.http.dto.PhoneDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
